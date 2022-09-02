@@ -2,8 +2,6 @@ from io import StringIO
 import logging
 import sys
 
-# from config import config
-
 log_levels = {
     'debug': logging.DEBUG,
     'info': logging.INFO,
@@ -11,7 +9,7 @@ log_levels = {
     'error': logging.ERROR
 }
 
-basic_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+basic_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setFormatter(basic_formatter)
