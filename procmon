@@ -1,0 +1,173 @@
+#!/usr/bin/env python
+
+"""
+procmon is a little utility for monitoring whether a process is running or not. If it's not, it'll send a notification.
+"""
+from io import StringIO
+import configparser
+import logging
+import os.path
+import smtplib
+import socket
+import ssl
+import subprocess
+import sys
+
+#
+# Parse configuration file
+#
+config = configparser.ConfigParser()
+config.read([
+    '/etc/procmon.cfg',
+    os.path.join(os.getcwd(), 'procmon.cfg')
+])
+
+#
+# Logging configuration
+#
+log_levels = {
+    'debug': logging.DEBUG,
+    'info': logging.INFO,
+    'warning': logging.WARNING,
+    'error': logging.ERROR
+}
+log_level = log_levels[config.get('General', 'LogLevel')]
+
+basic_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(log_level)
+stdout_handler.setFormatter(basic_formatter)
+
+log_stream = StringIO()
+string_handler = logging.StreamHandler(log_stream)
+string_handler.setLevel(log_level)
+string_handler.setFormatter(basic_formatter)
+
+logger = logging.getLogger()
+logger.setLevel(log_level)
+logger.addHandler(stdout_handler)
+logger.addHandler(string_handler)
+
+
+def main():
+    found_count = filter_processes()
+
+    if found_count < config.getint('General', 'MatchCount'):
+        logger.error(f'Found %d of expected %d processes' % (found_count, config.getint('General', 'MatchCount')))
+        if config.getboolean('General', 'SendEmailNotification'):
+            send_email(build_email_message(found_count))
+        sys.exit(1)
+
+    logger.info(f'Found %d of expected %d processes' % (found_count, config.getint('General', 'MatchCount')))
+    sys.exit(0)
+
+
+def filter_processes():
+    """ filter_processes is returning the number of matched processes found
+
+    :returns: int -- Number of matching processes found
+    """
+    found_count = 0
+    for proc in ps():
+        proc = proc.rstrip('\n').strip(' ')
+        grep_str = config.get('General', 'FilterString')
+        proc_str = proc
+        if config.getboolean('General', 'CaseInsensitive'):
+            proc_str = proc.lower()
+            grep_str = grep_str.lower()
+
+        logger.debug(f'Looking for "{grep_str}" in "{proc_str}"')
+        if proc_str.find(grep_str) >= 0:
+            logger.info(f'Matching process found: "%s"' % proc)
+            found_count += 1
+
+    return found_count
+
+
+def ps():
+    """ ps lists all processes
+
+    The function is not returning anything, instead it's yielding log lines to the calling function.
+    """
+    cmd = 'ps -ef'
+    ps_cmd = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, universal_newlines=True)
+
+    for line in ps_cmd.stdout:
+        yield line
+
+    ps_cmd.stdout.close()
+
+    return_code = ps_cmd.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, cmd)
+
+
+def build_email_message(found_count):
+    match_count = config.getint('General', 'MatchCount')
+    from_address = config.get('Email', 'FromAddress')
+    to_addresses = []
+    for addr in config.get('Email', 'ToAddresses').split(','):
+        to_addresses.append(addr.strip(' '))
+
+    return f"""From: Process monitor <{from_address}>
+To: {to_addresses}
+MIME-Version: 1.0
+Content-type: text/plain
+Subject: [procmon] Alert - Expected processes aren't running (found {found_count} of {match_count})
+
+Warning! We found {found_count} of expected {match_count} processes running on the system.
+
+Host name: {socket.gethostname()}
+Host IP: {socket.gethostbyname(socket.gethostname())}
+
+------------------ Settings -------------------------
+Filter string: {config.get('General', 'FilterString')}
+Case insensitive?: {config.getboolean('General', 'CaseInsensitive')}
+Expected process match count: {match_count}
+-----------------------------------------------------
+
+------------------ Log output -----------------------
+{log_stream.getvalue()}
+-----------------------------------------------------
+This is an automatic email from procmon.
+"""
+
+
+def send_email(message):
+    host = config.get('SMTP', 'Host')
+    port = config.getint('SMTP', 'Port')
+    use_ssl = config.getboolean('SMTP', 'UseSSL')
+    username = config.get('SMTP', 'Username')
+    password = config.get('SMTP', 'Password')
+    from_address = config.get('Email', 'FromAddress')
+    to_addresses = []
+    for addr in config.get('Email', 'ToAddresses').split(','):
+        to_addresses.append(addr.strip(' '))
+
+    try:
+        if use_ssl:
+            logger.debug(f'Connecting to SMTP server {host}:{port} over SSL')
+            ctx = ssl.create_default_context()
+
+            with smtplib.SMTP_SSL(host, port, context=ctx) as smtp:
+                smtp.login(username, password)
+                smtp.sendmail(from_address, to_addresses, message)
+
+        else:
+            logger.debug(f'Connecting to SMTP server {host}:{port} without SSL')
+            with smtplib.SMTP(host, port) as smtp:
+                smtp.login(username, password)
+                smtp.sendmail(from_address, to_addresses, message)
+
+        logger.info(f'Alert email sent to {", ".join(to_addresses)}')
+    except smtplib.SMTPException as e:
+        logger.error(f'Failed to send email: %s' % e)
+    except ConnectionRefusedError as e:
+        logger.error(f'Failed to connect to the SMTP server: %s' % e)
+    except Exception as e:
+        logger.error(f'Unexpected error: %s' % e)
+
+
+if __name__ == '__main__':
+    main()
