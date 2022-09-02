@@ -29,6 +29,7 @@ A full example of a configuration file can be found under [https://github.com/se
     procmon [OPTIONS] <filter string>
 
     Options:
+        -c, --config string         Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)
         -h, --help                  Print this help text
         -i, --insensitive           Case insensitive process matching
         -l, --log-level string      Log level; debug, info, warning, error (default: info)

@@ -7,9 +7,9 @@ import getopt
 import os.path
 import sys
 
-from config import config
 from logger import log, set_log_level
 from mail import send_email, build_email_message
+import config
 import process
 
 VERSION = '0.1.0'
@@ -17,8 +17,9 @@ VERSION = '0.1.0'
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "he:il:", [
+        opts, args = getopt.getopt(argv, "hc:e:il:", [
             "help",
+            "config",
             "expected-matches",
             "insensitive",
             "log-level",
@@ -30,11 +31,15 @@ def main(argv):
 
     case_insensitive = False
     expected_matches = 1
+    config_paths = None
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
             print_help()
             sys.exit(0)
+
+        elif opt in ('-c', '--config'):
+            config_paths = [arg]
 
         elif opt in ('-e', '--expected-matches'):
             expected_matches = int(arg)
@@ -48,6 +53,8 @@ def main(argv):
         elif opt == '--version':
             print_version()
             sys.exit(0)
+
+    config.read(config_paths)
 
     if len(args) == 0:
         print('Missing filter string!')
@@ -63,7 +70,7 @@ def main(argv):
 
     if match_count < expected_matches:
         log.error(f'Found %d of expected %d processes' % (match_count, expected_matches))
-        if config.getboolean('General', 'SendEmailNotification'):
+        if config.config.getboolean('General', 'SendEmailNotification'):
             send_email(build_email_message(match_count, expected_matches))
         sys.exit(1)
 
@@ -76,6 +83,7 @@ def print_help():
     print(f"""{os.path.basename(sys.argv[0])} [OPTIONS] <filter string>
 
 Options:
+    -c, --config string         Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)
     -h, --help                  Print this help text
     -i, --insensitive           Case insensitive process matching
     -l, --log-level string      Log level; debug, info, warning, error (default: info)
