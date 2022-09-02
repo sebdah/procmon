@@ -3,7 +3,7 @@
 """
 procmon is a little utility for monitoring whether a process is running or not. If it's not, it'll send a notification.
 """
-import getopt
+import argparse
 import os.path
 import sys
 
@@ -15,81 +15,22 @@ import process
 VERSION = '0.2.0'
 
 
-def main(argv):
-    try:
-        opts, args = getopt.getopt(argv, "hc:e:il:", [
-            "help",
-            "config",
-            "expected-matches",
-            "insensitive",
-            "log-level",
-            "version"
-        ])
-    except getopt.GetoptError as e:
-        log.error(f'Failed to parse command line arguments: %s' % e)
-        sys.exit(2)
-
-    case_insensitive = False
-    expected_matches = 1
-    config_paths = None
-
-    for opt, arg in opts:
-        if opt in ('-h', '--help'):
-            print_help()
-            sys.exit(0)
-
-        elif opt in ('-c', '--config'):
-            config_paths = [arg]
-
-        elif opt in ('-e', '--expected-matches'):
-            expected_matches = int(arg)
-
-        elif opt in ('-i', '--insensitive'):
-            case_insensitive = True
-
-        elif opt in ('-l', '--log-level'):
-            set_log_level(arg)
-
-        elif opt == '--version':
-            print_version()
-            sys.exit(0)
-
-    config.read(config_paths)
-
-    if len(args) == 0:
-        print('Missing filter string!')
-        print_help()
-        sys.exit(2)
-
-    filter_string = ' '.join(args)
+def main(args):
+    set_log_level(args.log_level)
 
     match_count = 0
     for proc in process.list_processes():
-        if process.match(proc, filter_string, case_insensitive):
+        if process.match(proc, args.filter, args.insensitive):
             match_count += 1
 
-    if match_count < expected_matches:
-        log.error(f'Found %d of expected %d processes' % (match_count, expected_matches))
+    if match_count < args.expected_matches:
+        log.error(f'Found %d of expected %d processes' % (match_count, args.expected_matches))
         if config.config.getboolean('General', 'SendEmailNotification'):
-            send_email(build_email_message(match_count, expected_matches))
+            send_email(build_email_message(match_count, args.expected_matches))
         sys.exit(1)
 
-    log.info(f'Found %d of expected %d processes' % (match_count, expected_matches))
+    log.info(f'Found %d of expected %d processes' % (match_count, args.expected_matches))
     sys.exit(0)
-
-
-def print_help():
-    """ Print command line argument help text """
-    print(f"""{os.path.basename(sys.argv[0])} [OPTIONS] <filter string>
-
-Options:
-    -c, --config string         Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)
-    -h, --help                  Print this help text
-    -i, --insensitive           Case insensitive process matching
-    -l, --log-level string      Log level; debug, info, warning, error (default: info)
-    -m, --match-count int       Number of matches required for a successful result (default: 1)
-    -v, --version               Print the procmon version number
-""")
 
 
 def print_version():
@@ -98,4 +39,31 @@ def print_version():
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    parser = argparse.ArgumentParser(add_help=True)
+    parser.add_argument('-c', '--config', nargs=1, default=None,
+                        help='Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)')
+    parser.add_argument('-e', '--expected-matches', type=int,
+                        help='Number of matches required for a successful result')
+    parser.add_argument('-i', '--insensitive', action='store_true',
+                        help='Case insensitive process matching')
+    parser.add_argument('--log-level', type=str, default='info', action='store',
+                        help='Log level; debug, info, warning, error')
+    parser.add_argument('--version', action='store_true',
+                        help='Print the procmon version number')
+    parser.add_argument('filter', type=str, nargs='?',
+                        help='Filter string to match processes for')
+
+    parsed_args = parser.parse_args()
+
+    if parsed_args.version:
+        print_version()
+        sys.exit(0)
+
+    if not parsed_args.filter:
+        print('Missing filter string!')
+        parser.print_help()
+        sys.exit(2)
+
+    config.read(parsed_args.config)
+
+    main(parsed_args)
