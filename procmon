@@ -12,20 +12,22 @@ from logger import log, set_log_level
 from mail import send_email, build_email_message
 import process
 
+VERSION = '0.1.0'
+
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "hie:l:", ["help", "expected-matches", "insensitive", "log-level"])
+        opts, args = getopt.getopt(argv, "he:il:", [
+            "help",
+            "expected-matches",
+            "insensitive",
+            "log-level",
+            "version"
+        ])
     except getopt.GetoptError as e:
         log.error(f'Failed to parse command line arguments: %s' % e)
         sys.exit(2)
 
-    if len(args) == 0:
-        print('Missing filter string!')
-        print_help()
-        sys.exit(2)
-
-    filter_string = ' '.join(args)
     case_insensitive = False
     expected_matches = 1
 
@@ -42,6 +44,17 @@ def main(argv):
 
         elif opt in ('-l', '--log-level'):
             set_log_level(arg)
+
+        elif opt == '--version':
+            print_version()
+            sys.exit(0)
+
+    if len(args) == 0:
+        print('Missing filter string!')
+        print_help()
+        sys.exit(2)
+
+    filter_string = ' '.join(args)
 
     match_count = 0
     for proc in process.list_processes():
@@ -66,8 +79,14 @@ Options:
     -h, --help                  Print this help text
     -i, --insensitive           Case insensitive process matching
     -l, --log-level string      Log level; debug, info, warning, error (default: info)
-    -m, --match-count int       Number of matches required for a successful result (default: 1)   
+    -m, --match-count int       Number of matches required for a successful result (default: 1)
+    -v, --version               Print the procmon version number
 """)
+
+
+def print_version():
+    """ Print version information """
+    print(f'{os.path.basename(sys.argv[0])} {VERSION}')
 
 
 if __name__ == '__main__':
