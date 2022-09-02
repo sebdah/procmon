@@ -1,5 +1,7 @@
 # procmon
 
+<img src="https://github.com/sebdah/procmon/blob/main/images/process-list.jpg?raw=true">
+
 `procmon` is a small utility for checking whether certain processes are found in the `ps -ef` process list. The utility is not a daemon, meaning it will run once and then die. So to monitor that a certain process is running, you would for example have `procmon` in cron.
 
 ## Configuration
