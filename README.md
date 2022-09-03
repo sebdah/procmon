@@ -47,4 +47,4 @@ The `Makefile` is configured for running tests unless you want to run it in your
 
     make test
 
-This assumes that Python is available on your host.
+This assumes that Python and `pytest` are available on your host.
