@@ -1,4 +1,5 @@
 # procmon
+![python package workflow](https://github.com/sebdah/procmon/actions/workflows/python-package.yml/badge.svg)
 
 <img src="https://github.com/sebdah/procmon/blob/main/images/process-list.jpg?raw=true">
 
