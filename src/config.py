@@ -1,7 +1,7 @@
 import configparser
 import os.path
 
-from logger import log
+from src.logger import log
 
 config = configparser.ConfigParser()
 

@@ -1,6 +1,6 @@
 import subprocess
 
-from logger import log
+from src.logger import log
 
 
 def match(source: str, filter_string: str, case_insensitive=False):

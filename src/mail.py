@@ -3,7 +3,7 @@ import socket
 import ssl
 
 from config import config
-from logger import log, log_stream
+from src.logger import log, log_stream
 
 
 def build_email_message(match_count: int, expected_matches: int):
