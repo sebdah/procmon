@@ -11,7 +11,7 @@ from src.logger import log, set_log_level
 from src.mail import send_email, build_email_message
 from src import process, config
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 
 def main(args):
