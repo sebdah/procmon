@@ -81,6 +81,10 @@ The below command would be looking for a process called `python bpytop` (case in
 
 # Development
 
+## EditorConfig
+
+The project uses [EditorConfig](https://editorconfig.org/) for configuration of IDEs for development. Please make sure you have EditorConfig enabled in your IDE when developing, that will make your code abide to the coding guidelines automatically.
+
 ## Running tests
 
 The `Makefile` is configured for running tests unless you want to run it in your editor. Simply execute:
