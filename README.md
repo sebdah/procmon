@@ -40,3 +40,11 @@ A full example of a configuration file can be found under [https://github.com/se
 The below command would be looking for a process called `python bpytop` (case insensitive). It would expect to find _at least_ 2 matches. And it would be logging on the debug level.
 
     procmon -i --log-level debug -m 2 python bpytop
+
+## Running tests
+
+The `Makefile` is configured for running tests unless you want to run it in your editor. Simply execute:
+
+    make test
+
+This assumes that Python is available on your host.
