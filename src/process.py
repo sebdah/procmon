@@ -43,9 +43,6 @@ def list_processes():
     """ Lists all processes
 
     The function is not returning anything, instead it's yielding log lines to the calling function.
-
-    >>> list_processes() # doctest: +ELLIPSIS
-    <generator object list_processes at 0x...>
     """
     cmd = 'ps -ef'
     ps_cmd = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, universal_newlines=True)
