@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/sebdah/procmon/blob/main/images/procmon.png?raw=true" alt="procmon logo"><br />
+<img src="https://github.com/sebdah/procmon/blob/main/images/procmon.png?raw=true" alt="procmon logo"><br /><br />
 <img src="https://github.com/sebdah/procmon/actions/workflows/python-package.yml/badge.svg" alt="Python tests badge">
 </p>
 
