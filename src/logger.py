@@ -31,32 +31,5 @@ def set_log_level(level: str):
     ----------
     level : str
         Log level (info, debug, warning, error)
-
-    Doc tests
-    ---------
-    Setting debug level:
-        >>> set_log_level('debug')
-        >>> log.level
-        10
-
-    Setting info level:
-        >>> set_log_level('info')
-        >>> log.level
-        20
-
-    Setting warning level:
-        >>> set_log_level('warning')
-        >>> log.level
-        30
-
-    Setting error level:
-        >>> set_log_level('error')
-        >>> log.level
-        40
-
-    Setting an invalid level throws an error:
-        >>> set_log_level('invalid')
-        Traceback (most recent call last):
-        KeyError: 'invalid'
     """
     log.setLevel(log_levels[level])
