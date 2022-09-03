@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "procmon"
+version = "0.2.0"
+authors = [
+    { name="Sebastian Dahlgren", email="sebastian.dahlgren@gmail.com" },
+]
+description = "Simple utility for checking if processes are running"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/sebdah/procmon"
+"Bug Tracker" = "https://github.com/sebdah/procmon/issues"
