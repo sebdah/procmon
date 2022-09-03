@@ -6,11 +6,15 @@ from src.config import config
 from src.logger import log, log_stream
 
 
-def build_email_message(match_count: int, expected_matches: int):
+def build_email_message(filter_string: str, case_insensitive: bool, match_count: int, expected_matches: int):
     """ build_email_message is returning a text email based on a number of variables
 
     Parameters
     ----------
+    filter_string : str
+        String to filter for.
+    case_insensitive : bool
+        Filter insensitive to case.
     match_count : int
         Number of processes matching the filter that was found
     expected_matches : int
@@ -38,8 +42,8 @@ Host name: {socket.gethostname()}
 Host IP: {socket.gethostbyname(socket.gethostname())}
 
 ------------------ Settings -------------------------
-Filter string: {config.get('General', 'FilterString')}
-Case insensitive?: {config.getboolean('General', 'CaseInsensitive')}
+Filter string: {filter_string}
+Case insensitive?: {case_insensitive}
 Expected process match count: {expected_matches}
 -----------------------------------------------------
 

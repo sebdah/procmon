@@ -24,8 +24,10 @@ def main(args):
 
     if match_count < args.expected_matches:
         log.error(f'Found %d of expected %d processes' % (match_count, args.expected_matches))
-        if config.config.getboolean('General', 'SendEmailNotification'):
-            send_email(build_email_message(match_count, args.expected_matches))
+
+        if args.send_email:
+            send_email(build_email_message(args.filter, args.insensitive, match_count, args.expected_matches))
+
         sys.exit(1)
 
     log.info(f'Found %d of expected %d processes' % (match_count, args.expected_matches))
@@ -45,6 +47,8 @@ if __name__ == '__main__':
                         help='Number of matches required for a successful result')
     parser.add_argument('-i', '--insensitive', action='store_true',
                         help='Case insensitive process matching')
+    parser.add_argument('--send-email', action='store_true',
+                        help='Send email notification')
     parser.add_argument('--log-level', type=str, default='info', action='store',
                         help='Log level; debug, info, warning, error')
     parser.add_argument('--version', action='store_true',
