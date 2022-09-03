@@ -19,32 +19,6 @@ def match(source: str, filter_string: str, case_insensitive=False):
     -------
     bool
         Returns True if the string was matched
-
-    Doc tests
-    ---------
-    Matching string with case sensitivity:
-        >>> match('abc', 'b', case_insensitive=False)
-        True
-
-    Not matching string with case sensitivity:
-        >>> match('abc', 'B', case_insensitive=False)
-        False
-
-    Matching string with case insensitivity:
-        >>> match('abc', 'B', case_insensitive=True)
-        True
-
-    String not found:
-        >>> match('abc', 'd', case_insensitive=True)
-        False
-
-    String not found in empty source:
-        >>> match('', 'd', case_insensitive=True)
-        False
-
-    String not found with empty filter:
-        >>> match('abc', '', case_insensitive=True)
-        False
     """
     if filter_string == '':
         return False

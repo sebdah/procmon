@@ -21,4 +21,6 @@ def read(paths=None):
         ]
 
     log.debug(f'Reading configuration from: %s', ', '.join(paths))
-    config.read(paths)
+    read_files = config.read(paths)
+    if not read_files:
+        log.warn(f'No procmon.cfg files found! Tested paths: %s' % ', '.join(paths))

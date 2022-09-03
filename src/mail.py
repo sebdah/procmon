@@ -2,7 +2,7 @@ import smtplib
 import socket
 import ssl
 
-from config import config
+from src.config import config
 from src.logger import log, log_stream
 
 
