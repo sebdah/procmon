@@ -9,10 +9,33 @@
 
 The configuration of `procmon` happens at two levels; 
 
-1. In a configuration file (this is where SMTP settings etc are)
-2. In the CLI (command line interface)
+1. In the CLI (command line interface)
+2. In a configuration file (this is where SMTP settings etc are)
+
+### CLI
+
+The below is a copy of the `procmon --help` output. It shows available configuration parameters and their meaning.
+
+    usage: procmon [-h] [-c CONFIG] [-e EXPECTED_MATCHES] [-i] [--send-email] [--log-level LOG_LEVEL] [--version] [filter]
+
+    positional arguments:
+      filter                Filter string to match processes for
+    
+    options:
+      -h, --help            show this help message and exit
+      -c CONFIG, --config CONFIG
+                            Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)
+      -e EXPECTED_MATCHES, --expected-matches EXPECTED_MATCHES
+                            Number of matches required for a successful result
+      -i, --insensitive     Case insensitive process matching
+      --send-email          Send email notification
+      --log-level LOG_LEVEL
+                            Log level; debug, info, warning, error
+      --version             Print the procmon version number
 
 ### Configuration file
+
+Using a configuration file is _entirely optional_ for users that are not using the `--send-email` option. The configuration file is only used for configuring SMTP settings and similar.
 
 #### Paths
 
@@ -24,17 +47,6 @@ The configuration of `procmon` happens at two levels;
 #### Example configuration file
 
 A full example of a configuration file can be found under [https://github.com/sebdah/procmon/blob/main/examples/procmon.cfg](https://github.com/sebdah/procmon/blob/main/examples/procmon.cfg)
-
-### CLI
-
-    procmon [OPTIONS] <filter string>
-
-    Options:
-        -c, --config string         Path for configuration file (default: /etc/procmon.cfg, ./procmon.cfg)
-        -h, --help                  Print this help text
-        -i, --insensitive           Case insensitive process matching
-        -l, --log-level string      Log level; debug, info, warning, error (default: info)
-        -m, --match-count int       Number of matches required for a successful result (default: 1)   
 
 #### Example
 
