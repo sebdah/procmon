@@ -6,7 +6,7 @@ from config import config
 from logger import log, log_stream
 
 
-def build_email_message(match_count, expected_matches):
+def build_email_message(match_count: int, expected_matches: int):
     """ build_email_message is returning a text email based on a number of variables
 
     Parameters
@@ -50,7 +50,7 @@ This is an automatic email from procmon.
 """
 
 
-def send_email(message):
+def send_email(message: str):
     host = config.get('SMTP', 'Host')
     port = config.getint('SMTP', 'Port')
     use_ssl = config.getboolean('SMTP', 'UseSSL')

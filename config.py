@@ -3,7 +3,6 @@ import os.path
 
 from logger import log
 
-
 config = configparser.ConfigParser()
 
 
