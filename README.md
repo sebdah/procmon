@@ -1,6 +1,6 @@
 <center>
-<img src="https://github.com/sebdah/procmon/blob/main/images/procmon.png?raw=true" alt="procmon logo">
-![python package workflow](https://github.com/sebdah/procmon/actions/workflows/python-package.yml/badge.svg)
+<img src="https://github.com/sebdah/procmon/blob/main/images/procmon.png?raw=true" alt="procmon logo"><br /><br />
+<img src="https://github.com/sebdah/procmon/actions/workflows/python-package.yml/badge.svg" alt="Python tests badge">
 </center>
 
 `procmon` is a small utility for checking whether certain processes are found in the `ps -ef` process list. The utility is not a daemon, meaning it will run once and then die. So to monitor that a certain process is running, you would for example have `procmon` in cron.
